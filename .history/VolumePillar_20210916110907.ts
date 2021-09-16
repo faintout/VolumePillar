@@ -108,8 +108,7 @@ class VolumePillar{
         ctx.stroke();
         this.ctx = ctx
     }
-    //监听音量值变化进行画布绘制（定时），根据帧率控制 、
-    // 次数为   1000/fps  1s内执行的次数
+    //监听音量值变化进行画布绘制（定时），根据帧率控制
     _drawMusic() {
         let {ctx,parentId,fps,splitLine} = this
         var canvasArea = document.getElementById(parentId)

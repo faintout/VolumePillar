@@ -4,7 +4,6 @@
 // volumePillar._init()
 // 默认 每1s内上报20个长度的数值 
 // 需定时每1s调用 _setVolumeVal 并赋值20长度音量电平值的数组 [-96,-96,-34,-34,-34,...]
-// 注意：调用_setVolumeVal时需dom节点加载完成，。vue可以在$nextTick方法中调用该函数
 class VolumePillar{
     canvasId:any
     parentId:any
@@ -108,8 +107,7 @@ class VolumePillar{
         ctx.stroke();
         this.ctx = ctx
     }
-    //监听音量值变化进行画布绘制（定时），根据帧率控制 、
-    // 次数为   1000/fps  1s内执行的次数
+    //监听音量值变化进行画布绘制（定时），根据帧率控制
     _drawMusic() {
         let {ctx,parentId,fps,splitLine} = this
         var canvasArea = document.getElementById(parentId)
