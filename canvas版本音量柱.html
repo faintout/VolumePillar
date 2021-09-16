@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- <svg style="width:100%;height:100%;">
+        <defs>
+          <linearGradient id="Gradient">
+            <stop offset="0" stop-color="white" stop-opacity="0" />
+            <stop offset="1" stop-color="white" stop-opacity="1" />
+          </linearGradient>
+          <mask id="Mask">
+            <rect x="0" y="0" width="200" height="200" fill="url(#Gradient)"  />
+          </mask>
+        </defs>
+      
+        <rect x="0" y="0" width="200" height="200" fill="green" />
+        <rect x="0" y="0" width="200" height="200" fill="red" mask="url(#Mask)" />
+      </svg> -->
+    <div id="canvas_area">
+        <!-- <canvas  id="canvas"></canvas> -->
+    </div>
+</body>
+<style>
+    #canvas_area {
+        width: 100%;
+        height: 2vw;
+        background-color: #000;
+        background-image: linear-gradient(90deg, rgba(0,128,0,.3), rgba(255,255,0,.3), rgba(255,0,0,.3));
+        position: relative;
+    }
+    #canvas_area canvas{
+        position: absolute;
+    }
+
+    * {
+        padding: 0;
+        margin: 0;
+    }
+
+    html,
+    body {
+        height: 100%;
+        width: 100%;
+    }
+</style>
+<script src="./value.js"></script>
+<script>
+    var myCanvas = document.createElement("canvas");
+    var canvasArea = document.getElementById('canvas_area')
+    let canvasHeight = canvasArea.offsetHeight
+    let canvasWidth = canvasArea.offsetWidth
+    var animationFrameVal = null
+    myCanvas.setAttribute("height", canvasArea.offsetHeight);
+    myCanvas.setAttribute("width", canvasArea.offsetWidth);
+    myCanvas.setAttribute("id", "myCanvas");
+    canvasArea.appendChild(myCanvas);
+
+
+    window.addEventListener("resize", resizeCanvas, false);
+
+    function resizeCanvas() {
+        myCanvas.width = canvasArea.offsetWidth
+        myCanvas.height = canvasArea.offsetHeight
+        initCanvas()
+    }
+
+    //开始
+    function initCanvas() {
+        var ctx = myCanvas.getContext("2d");
+        // 添加渐变
+        // let g1 = ctx.createLinearGradient(0, 0, canvasArea.offsetWidth, 0);
+        // g1.addColorStop(0, "rgba(0,128,0,.3)");
+        // g1.addColorStop(0.5, "rgba(255,255,0,.3)");
+        // g1.addColorStop(1, "rgba(255,0,0,.3)");
+        // ctx.beginPath()
+        // ctx.fillStyle = g1;
+        // ctx.fillRect(0, 0, canvasArea.offsetWidth, canvasArea.offsetHeight);
+        // ctx.closePath()
+        
+        let g = ctx.createLinearGradient(0, 0, canvasArea.offsetWidth, 0);
+        g.addColorStop(0, "rgb(0,128,0)");
+        g.addColorStop(0.5, "rgb(255,255,0)");
+        g.addColorStop(1, "rgb(255,0,0)");
+        ctx.beginPath()
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, canvasArea.offsetWidth, canvasArea.offsetHeight);
+        ctx.closePath()
+        
+        //添加分隔块
+        // var pat=ctx.createPattern(img,"repeat");
+        // ctx.rect(0,0,150,100);
+        // ctx.fillStyle=pat;
+        // ctx.fill();
+        // animationFrameVal&&window.requestAnimationFrame(animationFrameVal)
+        //画分割线
+        ctx.beginPath();
+        for(let i=0;i<45;i++){
+            ctx.moveTo(canvasArea.offsetWidth/45*i,0);
+            ctx.lineTo(canvasArea.offsetWidth/45*i,canvasArea.offsetHeight);
+        }
+        console.log('canvasArea.offsetWidth/45',canvasArea.offsetWidth/45);
+        ctx.lineWidth = canvasArea.offsetWidth/45/5;
+        ctx.stroke();
+        // ctx.strokeStyle = 'rgba(255,0,0,0.5)';
+        _drawMusic(ctx)
+    }
+
+    function _drawMusic(ctx) {
+        // let gx = ctx.createLinearGradient(0,0,canvasArea.offsetWidth,0);
+        // // console.log('ctxx',ctx);
+        // gx.addColorStop(1, "rgb(255,0,0)");
+        // gx.addColorStop(0.5, "rgb(255,255,0)");
+        // gx.addColorStop(0, "rgb(0,128,0)");
+        // ctx.fillStyle = gx;
+        // ctx.fillRect(0,0,canvasArea.offsetWidth,canvasArea.offsetHeight);
+
+        // let randomSameCount = 1
+        // let randomVal;
+        let randomPick;
+        let volumeCount =  0
+        let prevValue = 0
+        var draw = function() {
+            // let random  =  Math.floor(Math.random() *200+1)
+            ctx.clearRect(0, 0, canvasArea.offsetWidth, canvasArea.offsetHeight);
+            
+            // if(!randomVal){
+            //     randomVal = random
+            // }
+            // if(randomVal&&randomSameCount!=5){
+            //     random = randomVal
+            //     randomSameCount++
+            // }else{
+            //     // random =  100+Math.floor(Math.random() *100+1)
+            //    randomVal = random
+            //    randomSameCount = 1
+            // }
+            random = volumeValue[volumeCount]
+            volumeCount++
+            randomPick = randomPick || random
+            // if(prevValue>random){
+            //     random+=0.1
+            // }else if(prevValue<random){
+            //     random-=0.1
+            // }
+            if (randomPick < random) {
+                randomPick = random
+            } else if (randomPick > 2) {
+                randomPick -= 0.5
+            } else if (randomPick <= 2) {
+                randomPick = 1;
+            }
+            // if(randomPick < random){
+            //     randomPick = random
+            // }else if(randomPick>2){
+            //     randomPick-=2
+            // }
+            //画音量值
+            ctx.fillRect(0, 0, random*5, canvasArea.offsetHeight);
+            //画刻度线
+            ctx.beginPath();
+            for(let i=0;i<45;i++){
+                ctx.moveTo(canvasArea.offsetWidth/45*i,0);
+                ctx.lineTo(canvasArea.offsetWidth/45*i,canvasArea.offsetHeight);
+            }
+            ctx.lineWidth = canvasArea.offsetWidth/45/5;
+            ctx.stroke();
+            //画刻度值
+            ctx.fillRect(randomPick*5,0 ,5, canvasArea.offsetHeight);
+            // musicArray = new Uint8Array(analyser.frequencyBinCount);
+            // analyser.getByteFrequencyData(musicArray);
+            // console.log('musicArray',musicArray);
+            // console.log('musicArray.length',musicArray);
+            // var step = Math.round(musicArray.length/meterNum);
+            // console.log(step);
+            // ctx.clearRect(0,0,cWidth,cHeight);
+            // // 频谱的帽子数组
+            // musicHeadArray = musicHeadArray || musicArray;
+            // for(var i = 0; i< meterNum -17; i++){
+            // 	musicVal = musicArray[i*step];
+            //     //value值
+            //     ctx.fillRect(i*12, cHeight- musicVal,meterWidth,musicVal);
+            // 	//帽子数组更新
+            // 	if(musicHeadArray[i* step] < musicArray[i*step]){
+            //         musicHeadArray[i* step] = musicArray[i*step]
+            // 	}else if(musicHeadArray[i* step] > 2 ){
+            //         musicHeadArray[i* step] -= 1;
+            // 	}else if(musicHeadArray[i* step] <= 2){
+            //         musicHeadArray[i* step] = 0;
+            // 	}
+            //     //顶部刻度
+            //     ctx.fillRect(i*12, cHeight- musicHeadArray[i*step],meterWidth,5);
+            // }
+
+            //GANTAMADE
+
+            // if(musicHeadArray[i* step] < musicArray[i*step]){
+            //     musicHeadArray[i* step] = musicArray[i*step]
+            // }else if(musicHeadArray[i* step] > 2 ){
+            //     musicHeadArray[i* step] -= 1;
+            // }else if(musicHeadArray[i* step] <= 2){
+            //     musicHeadArray[i* step] = 0;
+            // }
+
+            //顶部刻度
+            window.requestAnimationFrame(draw);
+            // randomPick = random - 15
+        }
+        // draw();
+        //1s的帧率
+        var fps = 40
+        var fpsInterval = 1000 / fps
+        //上次执行的时刻
+        var last = new Date().getTime() 
+        var draw1 = function () {
+            
+            //重复动画
+            window.requestAnimationFrame(draw1);
+            // 执行时的时间
+            var now = new Date().getTime()
+            var elapsed = now - last;
+            // 经过了足够的时间
+            console.log(elapsed , fpsInterval);
+            if (elapsed > fpsInterval) {
+                last = now - (elapsed % fpsInterval); //校正当前时间
+
+                // 循环的代码
+                setVolumeVal()
+            }
+            //在布局上画音量值
+            function setVolumeVal() {
+                ctx.clearRect(0, 0, canvasArea.offsetWidth, canvasArea.offsetHeight);
+                random = volumeValue[volumeCount];
+                volumeCount++;
+                randomPick = randomPick || random;
+                if (randomPick < random) {
+                    randomPick = random;
+                }
+                else if (randomPick > 2) {
+                    randomPick -= 0.5;
+                }
+                else if (randomPick <= 2) {
+                    randomPick = 1;
+                }
+                //画音量值
+                ctx.fillRect(0, 0, random * 5, canvasArea.offsetHeight);
+                //画刻度线
+                ctx.beginPath();
+                for (var i = 0; i < 45; i++) {
+                    ctx.moveTo(canvasArea.offsetWidth / 45 * i, 0);
+                    ctx.lineTo(canvasArea.offsetWidth / 45 * i, canvasArea.offsetHeight);
+                }
+                ctx.lineWidth = canvasArea.offsetWidth / 45 / 5;
+                ctx.stroke();
+                //画刻度值
+                ctx.fillRect(randomPick * 5, 0, 5, canvasArea.offsetHeight);
+            }
+            
+            
+        };
+        draw1()
+    }
+    initCanvas()
+</script>
+
+
+
+</html>
