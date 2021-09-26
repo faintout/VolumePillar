@@ -19,6 +19,7 @@ class VolumePillar{
     dbfsMin:number
     lastVolumeVal:number
     splitLine:number
+    rafTimes:number|undefined
     backGround:Array<String>|String
     constructor(canvasId:string,parentId:string,backGround?:Array<String>|String,dbfsMin?:number,fps?:number,times?:number,splitLine?:number){
         //ctx对象
@@ -27,6 +28,8 @@ class VolumePillar{
         this.canvasId = canvasId
         //canvas父元素Id
         this.parentId = parentId
+        //raf动画的ID,用于注销时使用
+        this.rafTimes = undefined
         //需要解析的音量值列表
         this.volumeValue = []
         //音量值计数
@@ -125,7 +128,7 @@ class VolumePillar{
         var refreshAnimation = function() {
             
             //重复动画
-            window.requestAnimationFrame(refreshAnimation);
+            self.rafTimes = window.requestAnimationFrame(refreshAnimation);
             function setVolumeVal(){
                 ctx.clearRect(0, 0, canvasArea.offsetWidth, canvasArea.offsetHeight);
                 random = self.volumeValue[self.volumeCount]
@@ -192,6 +195,9 @@ class VolumePillar{
             this.volumeValue = []
         }
         this.volumeValue.push(...volumeValue); 
+    }
+    destroyRaf() {
+        this.rafTimes&&cancelAnimationFrame(this.rafTimes)
     }
 }
 // export default VolumePillar
