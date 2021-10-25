@@ -53,6 +53,7 @@ class VolumePillar{
     //初始化标签
     _init(){
         let {parentId,canvasId} = this
+        let self = this
         var myCanvas = document.createElement("canvas");
         var canvasArea = document.getElementById(parentId)
         let canvasHeight = canvasArea.offsetHeight
@@ -68,11 +69,11 @@ class VolumePillar{
         this._initCanvas(myCanvas,canvasArea)
         this._drawMusic()
         window.addEventListener("resize", resizeCanvas, false);
-
+        //画面变化重新设置
         function resizeCanvas() {
             myCanvas.width = canvasArea.offsetWidth
             myCanvas.height = canvasArea.offsetHeight
-            this._initCanvas(myCanvas)
+            self._initCanvas(myCanvas,canvasArea)
         }
     }
     //画canvas画布
@@ -131,8 +132,9 @@ class VolumePillar{
             self.rafTimes = window.requestAnimationFrame(refreshAnimation);
             function setVolumeVal(){
                 ctx.clearRect(0, 0, canvasArea.offsetWidth, canvasArea.offsetHeight);
-                random = self.volumeValue[self.volumeCount]
-                self.volumeCount++
+                // random = self.volumeValue[self.volumeCount]
+                random = self.volumeValue
+                // self.volumeCount++
                 randomPick = randomPick || random
 
                 if (randomPick < random) {
@@ -152,9 +154,18 @@ class VolumePillar{
                     ctx.lineTo(canvasArea.offsetWidth/splitLine*i,canvasArea.offsetHeight);
                 }
                 ctx.lineWidth = canvasArea.offsetWidth/splitLine/5;
+                ctx.strokeStyle="#000";
                 ctx.stroke();
                 //画刻度值
-                ctx.fillRect(randomPick,0 ,5, canvasArea.offsetHeight);
+                //以线条形式绘制
+                ctx.beginPath();
+                ctx.moveTo(randomPick, 0);
+                ctx.lineTo(randomPick, canvasArea.offsetHeight);
+                ctx.lineWidth = canvasArea.offsetWidth / 30 / 5;
+                ctx.strokeStyle="#fff";
+                ctx.stroke();
+                //已矩形方式绘制
+                // ctx.fillRect(randomPick,0 ,5, canvasArea.offsetHeight);
             }
             // 执行时的时间
             var now = new Date().getTime()
@@ -187,14 +198,16 @@ class VolumePillar{
             return width/100 * ((100/dbfsMin*-1)*(dbfsMin*-1+volume))
         })
         // this.volumeValue = volumeValue
-        this.timeCount++
+        // this.timeCount++
         //计算1s内数值
-        if(1000/times==this.timeCount){
-            this.timeCount = 0
-            this.volumeCount = 0
-            this.volumeValue = []
-        }
-        this.volumeValue.push(...volumeValue); 
+        // if(1000/times==this.timeCount){
+        //     this.timeCount = 0
+        //     this.volumeCount = 0
+        //     this.volumeValue = []
+        // }
+        this.volumeValue = volumeValue
+        // this.volumeValue.push(...volumeValue); 
+
     }
     destroyRaf() {
         this.rafTimes&&cancelAnimationFrame(this.rafTimes)
